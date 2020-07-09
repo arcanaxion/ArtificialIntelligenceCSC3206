@@ -1,0 +1,62 @@
+from sklearn.model_selection import train_test_split
+from sklearn import datasets, linear_model
+import pandas as pd
+import sys
+from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+
+def model(x, m, c):
+    return m*x + c
+
+def cost(y, yh):
+    return sum((y-yh)**2)/y.size
+
+def derivatives(x, y, yh):
+    n = x.size
+    deriv_m = (-2/n) * sum(x * (y - yh))
+    deriv_c = (-2/n) * sum((y - yh))
+
+    return {'m': deriv_m, 'c': deriv_c}
+
+diabetes = datasets.load_diabetes()
+
+pt = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
+y = pd.DataFrame(diabetes.target, columns=['target'])
+
+X_train, X_test, y_train, y_test = train_test_split(pt, y)
+regrmodel = linear_model.LinearRegression()
+regrmodel.fit(X_train[['bmi', 'bp']], y_train['target'])
+y_train_pred = regrmodel.predict(X_train[['bmi', 'bp']])
+y_test_pred = regrmodel.predict(X_test[['bmi', 'bp']])
+
+y_train_pred = pd.Series(y_train_pred)
+y_train_pred.index = y_train.index
+
+y_test_pred = pd.Series(y_test_pred)
+y_test_pred.index = y_test.index
+
+print('sklearn')
+print(f'  m {regrmodel.coef_}')
+print(f'  c {regrmodel.intercept_}')
+traincost = cost(y_train['target'], y_train_pred)
+testcost = cost(y_test['target'], y_test_pred)
+print(f'  training cost: {traincost}')
+print(f'  testing cost: {testcost}')
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(X_train['bmi'], X_train['bp'], y_train['target'], color='red')
+ax.scatter(X_train['bmi'], X_train['bp'], y_train_pred, color='green')
+ax.set_xlabel('BMI')
+ax.set_ylabel('Blood pressure')
+ax.set_title('Training data (sklearn multivariate)')
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(X_test['bmi'], X_test['bp'], y_test['target'], color='red')
+ax.scatter(X_test['bmi'], X_test['bp'], y_test_pred, color='green')
+ax.set_xlabel('BMI')
+ax.set_ylabel('Blood pressure')
+ax.set_title('Testing data (sklearn multivariate)')
+plt.show()
