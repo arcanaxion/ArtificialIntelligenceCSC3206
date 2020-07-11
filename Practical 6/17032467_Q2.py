@@ -22,7 +22,7 @@ diabetes = datasets.load_diabetes()
 pt = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
 y = pd.DataFrame(diabetes.target, columns=['target'])
 
-X_train, X_test, y_train, y_test = train_test_split(pt, y)
+X_train, X_test, y_train, y_test = train_test_split(pt, y, test_size=0.2, random_state=1)
 regrmodel = linear_model.LinearRegression()
 regrmodel.fit(X_train[['bmi']], y_train['target'])
 y_train_pred = regrmodel.predict(X_train[['bmi']])
