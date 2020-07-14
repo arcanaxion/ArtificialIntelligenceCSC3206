@@ -38,9 +38,15 @@ def groupby(a, b):
 
 # generate dataset
 from sklearn.datasets import make_blobs
-data = make_blobs(n_samples=200, n_features=2, centers=4, cluster_std=1.6, random_state=50)
+data = make_blobs(n_samples=200, n_features=2, centers=4, cluster_std=1.6)
 
 points = data[0]
+
+plt.figure
+plt.scatter(points[:,0], points[:,1])
+plt.show()
+
+
 # identify initial centroids
 centroids, others = get_random_centroids(points, 4)
 
